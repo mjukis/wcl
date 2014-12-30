@@ -394,36 +394,12 @@ def prompt_card(win,pnum,players,turn):
             input = win.getstr(cprompty + 1,cpromptx + 25,2)
             card = str(input)
             if card.upper() == "CC": #cancel game
-                win.addstr(cprompty + 2,cpromptx,"Verify cancelling ENTIRE GAME...",curses.A_BOLD)
-                win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                curses.noecho()
-                while 1:
-                     c = win.getkey(cprompty + 3,cpromptx + 17)
-                     if c.upper() == "Y":
-                         card = input
-                         break
-                     if c.upper() == "C":
-                         card = False
-                         break
-                curses.echo()
-                clearline(win,cprompty+2)
-                clearline(win,cprompty+3)
+                if promptyn(win,"Verify cancelling ENTIRE GAME...") == 2:
+                    card = False
                 return card
             if card.upper() == "DD": #discard
-                win.addstr(cprompty + 2,cpromptx,"Verify %s wishes to discard..." % pname)
-                win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                curses.noecho()
-                while 1:
-                     c = win.getkey(cprompty + 3,cpromptx + 17)
-                     if c.upper() == "Y":
-                         card = False
-                         break
-                     if c.upper() == "C":
-                         card = False
-                         break
-                curses.echo()
-                clearline(win,cprompty+2)
-                clearline(win,cprompty+3)
+                if promptyn(win,"Verify " + pname + " wishes to discard...") == 2:
+                    card = False
                 return card
 
             if numcard(card):
@@ -432,72 +408,26 @@ def prompt_card(win,pnum,players,turn):
             win.addstr(cprompty,cpromptx,"Player %s (%s)" % (pnum,pname),curses.A_BOLD)
             win.addstr(cprompty + 1,cpromptx,"plays card :    ",curses.A_BOLD)
             input = win.getstr(cprompty + 1,cpromptx + 13,2)
-            card = input
+            card = str(input)
+            if card == "":
+                card = False
+                break
             if card.upper() == "C": #cancel
-                win.addstr(cprompty + 2,cpromptx,"Verify cancelling %s's move and reverting %s's..." % (pname,oname))
-                win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                curses.noecho()
-                while 1:
-                     c = win.getkey(cprompty + 3,cpromptx + 17)
-                     if c.upper() == "Y":
-                         card = input
-                         break
-                     if c.upper() == "C":
-                         card = False
-                         break
-                curses.echo()
-                clearline(win,cprompty+2)
-                clearline(win,cprompty+3)
+                if promptyn(win,"Verify cancelling " + pname + "'s move and reverting " + oname + "'s...") == 2:
+                    card = False
                 return card
             if card.upper() == "CC": #cancel game
-                win.addstr(cprompty + 2,cpromptx,"Verify cancelling ENTIRE GAME...",curses.A_BOLD)
-                win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                curses.noecho()
-                while 1:
-                     c = win.getkey(cprompty + 3,cpromptx + 17)
-                     if c.upper() == "Y":
-                         card = input
-                         break
-                     if c.upper() == "C":
-                         card = False
-                         break
-                curses.echo()
-                clearline(win,cprompty+2)
-                clearline(win,cprompty+3)
+                if promptyn(win,"Verify cancelling ENTIRE GAME...") == 2:
+                    card = False
                 return card
-            
             if card[0].upper() == "D": #disband or discard
                 if card[1].upper() == "D": #discard
-                    win.addstr(cprompty + 2,cpromptx,"Verify %s wishes to discard..." % pname)
-                    win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                    curses.noecho()
-                    while 1:
-                         c = win.getkey(cprompty + 3,cpromptx + 17)
-                         if c.upper() == "Y":
-                             card = input
-                             break
-                         if c.upper() == "C":
-                             card = False
-                             break
-                    curses.echo()
-                    clearline(win,cprompty+2)
-                    clearline(win,cprompty+3)
+                    if promptyn(win,"Verify " + pname + " wishes to discard...") == 2:
+                        card = False
                     return card
                 if int(card[1]) <= 3 and int(card[1]) > 0: #disband
-                    win.addstr(cprompty + 2,cpromptx,"Verify %s wishes to disband Caravan %s..." % (pname,card[1]))
-                    win.addstr(cprompty + 3,cpromptx,"(Y)es / (C)ancel")
-                    curses.noecho()
-                    while 1:
-                         c = win.getkey(cprompty + 3,cpromptx + 17)
-                         if c.upper() == "Y":
-                             card = input
-                             break
-                         if c.upper() == "C":
-                             card = False
-                             break
-                    curses.echo()
-                    clearline(win,cprompty+2)
-                    clearline(win,cprompty+3)
+                    if promptyn(win,"Verify " + pname + " wishes to disband Caravan " + card[1] + "...") == 2:
+                        card = False
                     return card
         if turn > 3:
             if validcard(card):
@@ -583,7 +513,7 @@ def prompt(win,string,val1,val2,val3=0,val4=0):
     if val4 != 0:
         win.addstr(" / (4) %s" % val4)
     while outval == 0:
-       c = win.getkey(cprompty,cpromptx + len(string))
+       c = win.getkey(cprompty,cpromptx + len(string) + 1)
        if c == "1":
            outval = 1
        if c == "2":
@@ -612,7 +542,7 @@ def promptn(win,string,vals):
     if vals > 3:
         win.addstr(cprompty + 1,cpromptx,"(1) ... (%s)" % vals)
     while outval == 0:
-       c = win.getkey(cprompty,cpromptx + len(string))
+       c = win.getkey(cprompty,cpromptx + len(string) + 1)
        if c.isdigit():
            if int(c) > 0 and int(c) <= vals:
                outval = c
@@ -629,7 +559,7 @@ def promptyn(win,string):
     win.addstr(cprompty,cpromptx,string,curses.A_BOLD)
     win.addstr(cprompty + 1,cpromptx,"(Y)es / (N)o")
     while outval == 0:
-       c = win.getkey(cprompty,cpromptx + len(string))
+       c = win.getkey(cprompty,cpromptx + len(string) + 1)
        if c.upper() == "Y" or c == "1":
            outval = 1
        if c.upper() == "N" or c == "2":
@@ -733,19 +663,7 @@ def gameloop(win,players):
                     if turn <= 3:
                         cplay = turn
                     else:
-                        win.addstr(cprompty,cpromptx,"Play %s on Caravan number : " % card.upper(),curses.A_BOLD)
-                        curses.noecho()
-                        while 1:
-                             c = win.getkey(cprompty,cpromptx + 28)
-                             if int(c) == 1:
-                                 cplay = int(c)
-                                 break
-                             if int(c) == 2:
-                                 cplay = int(c)
-                                 break
-                             if int(c) == 3:
-                                 cplay = int(c)
-                                 break
+                        cplay = int(promptn(win,"Play " + card.upper() + " on Caravan number...",3))
                     p = activeplayer
                     c = cplay
                     validplay = playcard(win,card,cplay,activeplayer)
@@ -777,32 +695,8 @@ def gameloop(win,players):
                         win.addstr(cprompty,cpromptx,"                      ")
 
                 if facecard(card):
-#                    clearline(win,cprompty)
-#                    clearline(win,cprompty + 1)
-#                    win.addstr(cprompty,cpromptx,"Play %s on whose Caravan (1/2) : " % card.upper(),curses.A_BOLD)
-#                    curses.noecho()
-#                    pplay = False
-                    pplay = prompt(win,"Play " + card.upper() + " on whose Caravan : ",players[1],players[2])
-#                    while pplay == False:
-#                        c = win.getkey(cprompty,cpromptx + 33)
-#                        if int(c) == 1 or int(c) == 2:
-#                            pplay = int(c)
-#                            break
-                    cplay = promptn(win,"Play " + card.upper() + " on Caravan number : ",3)
-#                    win.addstr(cprompty,cpromptx,"Play %s on Caravan number : " % card.upper(),curses.A_BOLD)
-#                    cplay = False
-#                    while cplay == False:
-#                         c = win.getkey(cprompty,cpromptx + 28)
-#                         if int(c) == 1:
-#                             cplay = int(c)
-#                             break
-#                         if int(c) == 2:
-#                             cplay = int(c)
-#                             break
-#                         if int(c) == 3:
-#                             cplay = int(c)
-#                             break
-#                    curses.echo()
+                    pplay = prompt(win,"Play " + card.upper() + " on whose Caravan...",players[1],players[2])
+                    cplay = promptn(win,"Play " + card.upper() + " on Caravan number...",3)
                     pcaravan = False
                     p = pplay
                     c = cplay
