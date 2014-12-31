@@ -719,6 +719,87 @@ def killsuit(suit,caravan,pos):
         rown = rown + 1        
     rown = 0
 
+def killnum(value,caravan,pos):
+    rown = 0
+    for row in c11:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c11":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c11[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c12:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c12":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c12[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c13:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c13":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c13[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c21:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c21":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c21[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c22:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c22":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c22[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c23:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c23":
+            pass
+        else:
+            if lcard != 0:
+                if int(lcard[0]) == int(value):
+                    for num in row:
+                        c23[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+
 def resort_arrays():
     global c11
     global c12
