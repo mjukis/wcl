@@ -1,6 +1,6 @@
 #! /usr/bin/python
  #--------------------
-# WCL Scorekeeper 0.7
+# WCL Scorekeeper 1.0
 # By Erik N8MJK
 #--------------------
 
@@ -8,6 +8,7 @@ import curses
 import random
 import signal
 import time
+import sys
 
 # Import settings and globals
 from caravans import *
@@ -57,9 +58,9 @@ def setup_screen(win):
     activeplayer = 0
     turn1 = 0
     turn2 = 0
-    players = ["","Aboo","Baloo"]
-    return players
-#    players = ["","",""]
+#    players = ["","Aboo","Baloo"]
+#    return players
+    players = ["","",""]
 
     basic_screen_init(win,0)
     curses.echo()
@@ -85,24 +86,24 @@ def setup_screen(win):
         return False
     else:
         win.addstr(7,0,"Please seat %s as Player 1 and %s as Player 2" % (p1,p2))
-        win.addstr(8,0,"Verify with Y when Players are seated...")
-        win.addstr(10,1,"(Y)es / (C)ancel")
+        win.addstr(8,0,"Verify with Y when Players are seated...",curses.A_BOLD)
+        win.addstr(9,1,"(Y)es / (N)o")
         players[1] = p1
         players[2] = p2
         win.refresh()
         curses.noecho()
         while 1:
-            c = win.getkey(10,18)
-            if c.upper() == "Y":
-               win.addstr(12,1,"Verify that both Players have valid decks...")
-               win.addstr(14,1,"(Y)es / (C)ancel")
+            c = win.getkey(9,14)
+            if c.upper() == "Y" or c == "1":
+               win.addstr(11,1,"Verify that both Players have valid decks...",curses.A_BOLD)
+               win.addstr(12,1,"(Y)es / (N)o")
                while 1:
-                   c = win.getkey(14,18)
-                   if c.upper() == "Y":
+                   c = win.getkey(12,14)
+                   if c.upper() == "Y" or c == "1":
                        return players
-                   if c.upper() == "C":
+                   if c.upper() == "N" or c == "2":
                        return False
-            if c.upper() == "C":
+            if c.upper() == "N" or c == "2":
                 return False
 
 def numcard(card):
@@ -230,6 +231,40 @@ def draw_caravans(win):
     sumc13 = str(sum_caravan(c13)).zfill(2)
     sumc23 = str(sum_caravan(c23)).zfill(2)
 
+    c11complete = False
+    c12complete = False
+    c13complete = False
+    c21complete = False
+    c22complete = False
+    c23complete = False
+
+    if int(sumc11) >= 21 and int(sumc11) <= 26:
+        c11complete = True
+    if int(sumc12) >= 21 and int(sumc12) <= 26:
+        c12complete = True
+    if int(sumc13) >= 21 and int(sumc13) <= 26:
+        c13complete = True
+    if int(sumc21) >= 21 and int(sumc21) <= 26:
+        c21complete = True
+    if int(sumc22) >= 21 and int(sumc22) <= 26:
+        c22complete = True
+    if int(sumc23) >= 21 and int(sumc23) <= 26:
+        c23complete = True
+
+    c1complete = False
+    c2complete = False
+    c3complete = False
+
+    if c11complete == True or c21complete == True:
+        c1complete = True
+    if c12complete == True or c22complete == True:
+        c2complete = True
+    if c13complete == True or c23complete == True:
+        c3complete = True
+
+    p1win = 0
+    p2win = 0
+
     diff1 = "="
     win11 = int(sumc11)
     win21 = int(sumc21)
@@ -238,8 +273,10 @@ def draw_caravans(win):
     if win21 > 26:
         win21 = 0 
     if win11 > win21:
+        p1win = p1win + 1
         diff1 = ">"
     if win11 < win21:
+        p2win = p2win + 1
         diff1 = "<"
 
     diff2 = "="
@@ -250,8 +287,10 @@ def draw_caravans(win):
     if win22 > 26:
         win22 = 0 
     if win12 > win22:
+        p1win = p1win + 1
         diff2 = ">"
     if win12 < win22:
+        p2win = p2win + 1
         diff2 = "<"
 
     diff3 = "="
@@ -262,9 +301,16 @@ def draw_caravans(win):
     if win23 > 26:
         win23 = 0 
     if win13 > win23:
+        p1win = p1win + 1
         diff3 = ">"
     if win13 < win23:
+        p2win = p2win + 1
         diff3 = "<"
+
+    if p1win > p2win:
+        winner = 1
+    if p2win > p2win:
+        winner = 2
 
     win.addstr(c11y - 1,c11x,"P1C1%s %s " % (c11s,lastcard11))
     win.addstr(c11y - 2,c11x + 5,"%s%s" % (sumc11,diff1),curses.A_BOLD)
@@ -418,6 +464,11 @@ def draw_caravans(win):
                     valn = valn + 2
         rown = rown + 1
         valn = 0
+    if diff1 != "=" and diff2 != "=" and diff3 != "=":
+        if c1complete == True and c2complete == True and c3complete == True:
+            return winner
+
+    return False
 
 def clearline(win,line):
     win.move(line,0)
@@ -892,7 +943,7 @@ def jokerize(card,caravan,pos):
 
 def gameloop(win,players):
     outcome = "Incomplete"
-    activeplayer = 1   
+    activeplayer = 1
     turn1 = 0
     turn2 = 0
     cplay = 0
@@ -906,7 +957,6 @@ def gameloop(win,players):
 
     while outcome == "Incomplete":
         basic_screen_init(win,1)
-        draw_caravans(win)
         if activeplayer == 1:
             turn1 = turn1 + 1
             turn = turn1
@@ -921,7 +971,11 @@ def gameloop(win,players):
         else:
             win.addstr(" - Play Cards")
         win.refresh()
-        draw_caravans(win)
+        done = draw_caravans(win)
+        if done != False:
+            outcome = "Complete"
+            winner = done
+            break
 
         validplay = False
         while validplay == False:
@@ -1178,7 +1232,7 @@ def gameloop(win,players):
             activeplayer = 2
         else:
             activeplayer = 1
-    return outcome
+    return outcome,winner
 
 # Main game loop, runs setup loop and game loop in sequence until quit
 def mainloop(win,ref):
@@ -1187,16 +1241,28 @@ def mainloop(win,ref):
         while players == False:
             players = setup_screen(win)
         outcome = False
+        winner = False
         while outcome == False:
-            outcome = gameloop(win,players)
+            outcome,winner = gameloop(win,players)
+            basic_screen_init(win,2)
+            win.addstr(cprompty - 2,1,"%s (player %s) wins!" % (players[winner],winner),curses.A_BOLD) 
+            newgame = win.getch(cprompty,1)
+            outcome = "Incomplete"
+            c11 = copy.deepcopy(c11_empty)
+            c12 = copy.deepcopy(c12_empty)
+            c13 = copy.deepcopy(c13_empty)
+            c21 = copy.deepcopy(c21_empty)
+            c22 = copy.deepcopy(c22_empty)
+            c23 = copy.deepcopy(c23_empty)
+            
 
 # Step through loops
 def startup(win):
-#    splash(win)
-#    ref = False
-#    while ref == False:
-#        ref = login_screen(win)
-    ref = "Erik"
+    splash(win)
+    ref = False
+    while ref == False:
+        ref = login_screen(win)
+#    ref = "Erik"
     result = False
     while result == False:
         result = mainloop(win,ref)
