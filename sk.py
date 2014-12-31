@@ -133,6 +133,17 @@ def facecard(card):
             return True 
     return False
 
+def lastcard(caravan):
+    lastrow = 0
+    lastnum = 0
+    for row in caravan:
+        if row[0] != "0":
+            for num in row:
+                if num == 0:
+                    return lastrow,lastnum
+                lastnum = lastnum + 1
+        lastrow = lastrow + 1
+
 def sum_caravan(caravan):
     csum = 0
     for row in caravan:
@@ -165,25 +176,40 @@ def caravan_sit(caravan):
     row2 = 0
     dir = "-"
     suit = "N"
+    queenlast = False
+    queencount = 0
     for row in caravan:
         if row[0] == 0:
             break
         else:
+            queenlast = False
+            queencount = 0
             for val in row:
                 if val == 0:
                     break
                 else:
                     if val[0].isdigit():
+                        queenlast = False
                         row1 = row2
                         if val[0] == "0":
                             row2 = 10
                         else:
                             row2 = val[0]
                         suit = val[1]
+                    else:
+                        if val[0].upper() == "Q":
+                            queenlast = True
+                            queencount = queencount + 1
     if int(row2) > int(row1):
-        dir = "^"
+        if queenlast == True and (queencount % 2 != 0):
+            dir = "v"
+        else:
+            dir = "^"
     if int(row2) < int(row1):
-        dir = "v"
+        if queenlast == True and (queencount % 2 != 0):
+            dir = "^"
+        else:
+            dir = "v"
     if row1 == 0:
         dir = "-"
     out = dir + suit
@@ -270,7 +296,10 @@ def draw_caravans(win):
                         win.addstr(c11y + rown,c11x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c11y + rown,c11x + valn,str(val))                        
+                        if val[0] == "1":
+                            win.addstr(c11y + rown,c11x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c11y + rown,c11x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -290,7 +319,10 @@ def draw_caravans(win):
                         win.addstr(c21y + rown,c21x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c21y + rown,c21x + valn,str(val))                        
+                        if val[0] == "1":
+                            win.addstr(c21y + rown,c21x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c21y + rown,c21x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -310,7 +342,10 @@ def draw_caravans(win):
                         win.addstr(c12y + rown,c12x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c12y + rown,c12x + valn,str(val))                        
+                        if val[0] == "1":
+                            win.addstr(c12y + rown,c12x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c12y + rown,c12x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -330,7 +365,10 @@ def draw_caravans(win):
                         win.addstr(c22y + rown,c22x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c22y + rown,c22x + valn,str(val))                        
+                        if val[0] == "1":
+                            win.addstr(c22y + rown,c22x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c22y + rown,c22x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -350,7 +388,10 @@ def draw_caravans(win):
                         win.addstr(c13y + rown,c13x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c13y + rown,c13x + valn,str(val))                        
+                        if val[0] == "1":
+                            win.addstr(c13y + rown,c13x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c13y + rown,c13x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -370,7 +411,10 @@ def draw_caravans(win):
                         win.addstr(c23y + rown,c23x + valn - 1,str(1))
                         win.addstr(str(val))
                     else:
-                        win.addstr(c23y + rown,c23x + valn,str(val))
+                        if val[0] == "1":
+                            win.addstr(c23y + rown,c23x + valn,"A" + str(val[1]))
+                        else:
+                            win.addstr(c23y + rown,c23x + valn,str(val))                        
                     valn = valn + 2
         rown = rown + 1
         valn = 0
@@ -389,6 +433,8 @@ def prompt_card(win,pnum,players,turn):
     card = False
     while card == False:
         if turn <= 3:
+            clearline(win,cprompty)
+            clearline(win,cprompty + 1)
             win.addstr(cprompty,cpromptx,"Player %s (%s)" % (pnum,pname),curses.A_BOLD)
             win.addstr(cprompty + 1,cpromptx,"plays card to Caravan %s:    " % turn,curses.A_BOLD)
             input = win.getstr(cprompty + 1,cpromptx + 25,2)
@@ -405,6 +451,8 @@ def prompt_card(win,pnum,players,turn):
             if numcard(card):
                 return card
         if turn > 3:
+            clearline(win,cprompty)
+            clearline(win,cprompty + 1)
             win.addstr(cprompty,cpromptx,"Player %s (%s)" % (pnum,pname),curses.A_BOLD)
             win.addstr(cprompty + 1,cpromptx,"plays card :    ",curses.A_BOLD)
             input = win.getstr(cprompty + 1,cpromptx + 13,2)
@@ -493,13 +541,34 @@ def playpos(player,caravan,pos,card):
     if caravan[row][0] == 0:
         return False
     else:
-        numn = 0
+        nnum = 0
         for num in caravan[row]:
             if num == 0:
-                caravan[row][numn] = card.upper()
-                return caravan
-            numn = numn + 1
+                return nnum
+            nnum = nnum + 1
         return False
+
+def promptnumstr(win,string,low,high):
+    outval = 0
+    curses.echo()
+    clearline(win,cprompty)
+    clearline(win,cprompty + 1)
+    win.addstr(cprompty,cpromptx,string,curses.A_BOLD)
+    win.addstr(cprompty + 1,cpromptx,"(%s ... %s)" % (low,high))
+    while outval == 0:
+       c = win.getstr(cprompty,cpromptx + len(string) + 1,2)
+       if c == "":
+           outval = 0
+           break
+       if c.isdigit() == False:
+           outval = 0
+           break
+       if int(c) >= int(low) and int(c) <= int(high):
+           outval = c
+    curses.echo()
+    clearline(win,cprompty)
+    clearline(win,cprompty + 1)
+    return outval
 
 def prompt(win,string,val1,val2,val3=0,val4=0):
     outval = 0
@@ -569,6 +638,177 @@ def promptyn(win,string):
     clearline(win,cprompty + 1)
     return outval
 
+def killsuit(suit,caravan,pos):
+    rown = 0
+    for row in c11:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c11":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c11[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c12:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c12":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c12[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c13:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c13":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c13[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c21:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c21":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c21[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c22:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c22":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c22[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+    for row in c23:
+        numn = 0
+        lcard = row[0]
+        if rown == pos and caravan == "c23":
+            pass
+        else:
+            if lcard != 0:
+                if lcard[1].upper() == suit.upper():
+                    for num in row:
+                        c23[rown][numn] = 0
+                        numn = numn + 1
+        rown = rown + 1        
+    rown = 0
+
+def resort_arrays():
+    global c11
+    global c12
+    global c13
+    global c21
+    global c22
+    global c23
+
+    c11m = copy.deepcopy(c11)
+    c12m = copy.deepcopy(c12)
+    c13m = copy.deepcopy(c13)
+    c21m = copy.deepcopy(c21)
+    c22m = copy.deepcopy(c22)
+    c23m = copy.deepcopy(c23)
+
+    emptyrows11 = []
+    rown = 0
+    for row in c11:
+        if row[0] == 0:
+            emptyrows11.append(rown)
+        rown = rown + 1
+    for row in emptyrows11:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c11m[i - 1] = copy.deepcopy(c11[i])
+    c11 = copy.deepcopy(c11m)
+
+    emptyrows12 = []
+    rown = 0
+    for row in c12:
+        if row[0] == 0:
+            emptyrows12.append(rown)
+        rown = rown + 1
+    for row in emptyrows12:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c12m[i - 1] = copy.deepcopy(c12[i])
+    c12 = copy.deepcopy(c12m)
+    emptyrows13 = []
+    rown = 0
+    for row in c13:
+        if row[0] == 0:
+            emptyrows13.append(rown)
+        rown = rown + 1
+    for row in emptyrows13:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c13m[i - 1] = copy.deepcopy(c13[i])
+    c13 = copy.deepcopy(c13m)
+    emptyrows21 = []
+    rown = 0
+    for row in c21:
+        if row[0] == 0:
+            emptyrows21.append(rown)
+        rown = rown + 1
+    for row in emptyrows21:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c21m[i - 1] = copy.deepcopy(c21[i])
+    c21 = copy.deepcopy(c21m)
+    emptyrows22 = []
+    rown = 0
+    for row in c22:
+        if row[0] == 0:
+            emptyrows22.append(rown)
+        rown = rown + 1
+    for row in emptyrows22:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c22m[i - 1] = copy.deepcopy(c22[i])
+    c22 = copy.deepcopy(c22m)
+    emptyrows23 = []
+    rown = 0
+    for row in c23:
+        if row[0] == 0:
+            emptyrows23.append(rown)
+        rown = rown + 1
+    for row in emptyrows23:
+        nextrow = row + 1
+        for i in range(nextrow,54):
+            c23m[i - 1] = copy.deepcopy(c23[i])
+    c23 = copy.deepcopy(c23m)
+
+def jokerize(card,caravan,pos):
+    if card[0] == "1" or card[0] == "A":
+        killsuit(card[1],caravan,pos)
+    else:
+        killnum(card[0],caravan,pos)
+    resort_arrays()
+
 def gameloop(win,players):
     outcome = "Incomplete"
     activeplayer = 1   
@@ -613,25 +853,25 @@ def gameloop(win,players):
                     if c > 0 and c <= 3:
                         p = activeplayer
                         if p == 1 and c == 1:
-                            c11 = c11_empty
+                            c11 = copy.deepcopy(c11_empty)
                         if p == 1 and c == 2:
-                            c12 = c12_empty
+                            c12 = copy.deepcopy(c12_empty)
                         if p == 1 and c == 3:
-                            c13 = c13_empty
+                            c13 = copy.deepcopy(c13_empty)
                         if p == 2 and c == 1:
-                            c21 = c21_empty
+                            c21 = copy.deepcopy(c21_empty)
                         if p == 2 and c == 2:
-                            c22 = c22_empty
+                            c22 = copy.deepcopy(c22_empty)
                         if p == 2 and c == 3:
-                            c23 = c23_empty
+                            c23 = copy.deepcopy(c23_empty)
                         break
                 if card.upper() == "CC":
-                    c11 = c11_empty
-                    c12 = c12_empty
-                    c13 = c13_empty
-                    c21 = c21_empty
-                    c22 = c22_empty
-                    c23 = c23_empty
+                    c11 = copy.deepcopy(c11_empty)
+                    c12 = copy.deepcopy(c12_empty)
+                    c13 = copy.deepcopy(c13_empty)
+                    c21 = copy.deepcopy(c21_empty)
+                    c22 = copy.deepcopy(c22_empty)
+                    c23 = copy.deepcopy(c23_empty)
 
                     outcome = "Cancelled"
                     break
@@ -692,39 +932,167 @@ def gameloop(win,players):
                         win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
                         win.refresh()
                         time.sleep(2)
-                        win.addstr(cprompty,cpromptx,"                      ")
+                        clearline(win,cprompty)
 
                 if facecard(card):
                     pplay = prompt(win,"Play " + card.upper() + " on whose Caravan...",players[1],players[2])
                     cplay = promptn(win,"Play " + card.upper() + " on Caravan number...",3)
-                    pcaravan = False
+                    cardnum = -1
                     p = pplay
                     c = cplay
-                    while pcaravan == False:
+                    while cardnum == -1:
                         clearline(win,cprompty)
                         clearline(win,cprompty + 1)
-                        win.addstr(cprompty,cpromptx,"Play %s on %s's Caravan %s in position : " % (card.upper(),players[p],c),curses.A_BOLD)
-                        cardpos = win.getstr(cprompty,cpromptx + 35,2)
-                        pcaravan = playpos(p,c,cardpos,card)
-                    if p == 1 and c == 1:
-                        c11 = pcaravan
-                        validplay = True
-                    if p == 1 and c == 2:
-                        c12 = pcaravan
-                        validplay = True
-                    if p == 1 and c == 3:
-                        c13 = pcaravan
-                        validplay = True
-                    if p == 2 and c == 1:
-                        c21 = pcaravan
-                        validplay = True
-                    if p == 2 and c == 2:
-                        c22 = pcaravan
-                        validplay = True
-                    if p == 2 and c == 3:
-                        c23 = pcaravan
-                        validplay = True
-#                    
+                        cardpos = False
+                        while cardpos == False:
+                            cardpos = int(promptnumstr(win,"Play " + card.upper() + " on "  + players[p] + "'s Caravan in position :",1,baserows))
+                        cardnum = int(playpos(p,c,cardpos,card))
+                    if int(p) == 1 and int(c) == 1:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c11[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c11[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c11[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c11[cp][facen],"c11",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c11[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c11[cp][cardnum] = card.upper()
+                                validplay = True
+                    if int(p) == 1 and int(c) == 2:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c12[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c12[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c12[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c12[cp][facen],"c12",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c12[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c12[cp][cardnum] = card.upper()
+                                validplay = True
+                    if int(p) == 1 and int(c) == 3:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c13[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c13[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c13[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c13[cp][facen],"c13",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c13[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c13[cp][cardnum] = card.upper()
+                                validplay = True
+                    if int(p) == 2 and int(c) == 1:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c11[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c21[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c21[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c21[cp][facen],"c21",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c21[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c21[cp][cardnum] = card.upper()
+                                validplay = True
+                    if int(p) == 2 and int(c) == 2:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c22[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c22[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c22[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c22[cp][facen],"c22",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c22[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c22[cp][cardnum] = card.upper()
+                                validplay = True
+                    if int(p) == 2 and int(c) == 3:
+                        cp = cardpos - 1
+                        cn = cardnum - 1
+                        facen = cn
+                        if c23[cp][0] == 0:
+                            clearline(win,cprompty)
+                            clearline(win,cprompty + 1)
+                            win.addstr(cprompty,cpromptx,"Sorry, invalid play...",curses.A_BOLD)
+                            win.refresh()
+                            time.sleep(2)
+                        else:
+                            while facecard(c23[cp][facen]):
+                                facen = facen - 1
+                            goforit = promptyn(win,"Play " + card.upper() + " on a " + str(c23[cp][facen]) + "...")
+                            if goforit == 1:
+                                if card.upper() == "JJ":
+                                    jokerize(c23[cp][facen],"c23",cp)
+                                if card[0].upper() == "J" and card[1].upper() != "J":
+                                    c23[cp] = [0] * 54
+                                    resort_arrays()
+                                else:
+                                    if card.upper() != "JJ":
+                                        c23[cp][cardnum] = card.upper()
+                                validplay = True
+                    prevrow = cardpos
+                    prevc = cardnum
         if activeplayer == 1:
             activeplayer = 2
         else:
