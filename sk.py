@@ -1,6 +1,6 @@
 #! /usr/bin/python
  #--------------------
-# WCL Scorekeeper 1.0
+# WCL Scorekeeper 1.2
 # By Erik N8MJK
 #--------------------
 
@@ -1236,36 +1236,41 @@ def gameloop(win,players):
 
 # Main game loop, runs setup loop and game loop in sequence until quit
 def mainloop(win,ref):
-    while 1:
-        players = False
-        while players == False:
-            players = setup_screen(win)
-        outcome = False
-        winner = False
-        while outcome == False:
-            outcome,winner = gameloop(win,players)
-            basic_screen_init(win,2)
-            win.addstr(cprompty - 2,1,"%s (player %s) wins!" % (players[winner],winner),curses.A_BOLD) 
-            newgame = win.getch(cprompty,1)
-            outcome = "Incomplete"
-            c11 = copy.deepcopy(c11_empty)
-            c12 = copy.deepcopy(c12_empty)
-            c13 = copy.deepcopy(c13_empty)
-            c21 = copy.deepcopy(c21_empty)
-            c22 = copy.deepcopy(c22_empty)
-            c23 = copy.deepcopy(c23_empty)
+    global c11
+    global c12
+    global c13
+    global c21
+    global c22
+    global c23
+    players = False
+    while players == False:
+        players = setup_screen(win)
+    outcome = False
+    winner = False
+    while outcome == False:
+        outcome,winner = gameloop(win,players)
+        basic_screen_init(win,2)
+        win.addstr(cprompty - 2,1,"%s (player %s) wins!" % (players[winner],winner),curses.A_BOLD) 
+        newgame = win.getch(cprompty,1)
+        c11 = copy.deepcopy(c11_empty)
+        c12 = copy.deepcopy(c12_empty)
+        c13 = copy.deepcopy(c13_empty)
+        c21 = copy.deepcopy(c21_empty)
+        c22 = copy.deepcopy(c22_empty)
+        c23 = copy.deepcopy(c23_empty)
+    return outcome
             
 
 # Step through loops
 def startup(win):
     splash(win)
     ref = False
-    while ref == False:
-        ref = login_screen(win)
-#    ref = "Erik"
-    result = False
-    while result == False:
-        result = mainloop(win,ref)
+    while 1:
+        while ref == False:
+            ref = login_screen(win)
+        result = False
+        while result == False:
+            result = mainloop(win,ref)
 
 if __name__=='__main__':
     try:
