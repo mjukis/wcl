@@ -16,7 +16,7 @@ xoffset = 2
 yoffset = 0
 winner = False
 
-version = "1.0"
+version = "1.2"
 topstring1 = " SCOREKEEPER v%s - WASTELAND CARAVAN LEAGUE" % version
 toprem = termw - len(topstring1) - 1
 topstring2 = " " * toprem
