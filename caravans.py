@@ -15,8 +15,10 @@ baserows = 15
 xoffset = 2
 yoffset = 0
 winner = False
+logoy = 2
+logox = 0
 
-version = "1.2"
+version = "1.3"
 topstring1 = " SCOREKEEPER v%s - WASTELAND CARAVAN LEAGUE" % version
 toprem = termw - len(topstring1) - 1
 topstring2 = " " * toprem
