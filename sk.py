@@ -1,6 +1,6 @@
 #! /usr/bin/python
  #--------------------
-# WCL Scorekeeper 1.2
+# WCL Scorekeeper 1.3
 # By Erik N8MJK
 #--------------------
 
@@ -12,11 +12,76 @@ import sys
 
 # Import settings and globals
 from caravans import *
+from logo import *
 
 # Display splash screen
 def splash(win):
+    global l
     win.clear()
-    print "\n\r                      .A.                             mMm\n\r                     .MMM.                         .m.MMM.m.\n\r                    ,MMMMM.                        MMMMMMMLM\n\r                    'm\"I\"m'                         '\"TIT\"'\n\r                      .L.                             .L.\n\r\n\r                    \"TMMF  ,m   TMMF\"    nM\"M.T    TMMF\n\r                      TM   MM    TM'    iM' 'WM     MM\n\r                      IM. ,N'M  .IN    .MI   MM     nM\n\r                      'Mi M' M. iM'    iMl          MM\n\r                       TMiM   MiMT     'MI          Mm   I\n\r                       'Mi'   'NM'      lM. .MM     MM.  M\n\r                        MM     MM        'MmMT'    nMMTmMM\n\r\n\r                    .m. .m.                           .A.\n\r                    MMMMMMM                          ,AMA.\n\r                    'MMMMM'                         .AMMMD.\n\r                     'MMM'                           'VMV'\n\r                      'V'                             'V'\n\r"
+    i = 0
+    spy = int(logoy + 2)
+    spx = int(logox + 50)
+    for line in l:
+        win.addstr(logoy + i,logox,line)
+        win.move(0,0)
+        win.refresh()
+        time.sleep(0.1)
+        i = i + 1
+    win.addstr(spy,spx,"*")
+    win.move(0,0)
+    win.refresh()
+    time.sleep(0.05)
+
+    win.addstr(spy-1,spx,"*")
+    win.addstr(spy,spx-1,"*+*")
+    win.addstr(spy+1,spx,"*")
+    win.move(0,0)
+    win.refresh()
+    time.sleep(0.05)
+
+    win.addstr(spy-2,spx-2,". *")
+    win.addstr(spy-1,spx-1,"\:,")
+    win.addstr(spy,spx-3,"*-*+*-*")
+    win.addstr(spy+1,spx-1,"'*\ ")
+    win.addstr(spy+2,spx,"* '")
+    win.move(0,0)
+    win.refresh()
+    time.sleep(0.75)
+    i = 0
+    for line in l:
+        win.addstr(logoy + i,logox,line)
+        win.move(0,0)
+        win.refresh()
+        i = i + 1
+    win.addstr(spy-1,spx,"*")
+    win.addstr(spy,spx-1,"*+*")
+    win.addstr(spy+1,spx,"*")
+    win.move(0,0)
+    win.refresh()
+    time.sleep(0.05)
+    i = 0
+    for line in l:
+        win.addstr(logoy + i,logox,line)
+        win.move(0,0)
+        win.refresh()
+        i = i + 1
+    win.addstr(spy,spx,"*")
+    win.move(0,0)
+    win.refresh()
+    time.sleep(0.05)
+    i = 0
+    for line in l:
+        win.addstr(logoy + i,logox,line)
+        win.move(0,0)
+        win.refresh()
+        i = i + 1
+
+#    . * 
+#     \:,
+#   *-***-*
+#     ':\
+#      * '
+#    print "\n\r                      .A.                             mMm\n\r                     .MMM.                         .m.MMM.m.\n\r                    ,MMMMM.                        MMMMMMMLM\n\r                    'm\"I\"m'                         '\"TIT\"'\n\r                      .L.                             .L.\n\r\n\r                    \"TMMF  ,m   TMMF\"    nM\"M.T    TMMF\n\r                      TM   MM    TM'    iM' 'WM     MM\n\r                      IM. ,N'M  .IN    .MI   MM     nM\n\r                      'Mi M' M. iM'    iMl          MM\n\r                       TMiM   MiMT     'MI          Mm   I\n\r                       'Mi'   'NM'      lM. .MM     MM.  M\n\r                        MM     MM        'MmMT'    nMMTmMM\n\r\n\r                    .m. .m.                           .A.\n\r                    MMMMMMM                          ,AMA.\n\r                    'MMMMM'                         .AMMMD.\n\r                     'MMM'                           'VMV'\n\r                      'V'                             'V'\n\r"
     time.sleep(2)
 
 # Empty the screen and redraw the top banner
