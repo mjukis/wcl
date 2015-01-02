@@ -374,7 +374,7 @@ def draw_caravans(win):
 
     if p1win > p2win:
         winner = 1
-    if p2win > p2win:
+    if p2win > p1win:
         winner = 2
 
     win.addstr(c11y - 1,c11x,"P1C1%s %s " % (c11s,lastcard11))
