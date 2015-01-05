@@ -14,6 +14,26 @@ import sys
 from caravans import *
 from logo import *
 
+# Write Log file
+def writelog(s):
+    output = str(s)
+    try:
+        fh = open(logfile,'a')
+        tnow = str(time.strftime("%y%m%d %H:%M:%S"))
+        fh.write(tnow + ">" + output + "\n")
+        fh.close()
+    except:
+        #error handle this later
+        pass
+
+# Log a player's move
+def logmove(pnum,card,pos):
+    numstr = str(pnum)
+    cardstr = str(card)
+    posstr = str(pos)
+    outstr = "PLAY:" + numstr + "-" + cardstr.upper() + "-" + posstr
+    writelog(outstr)    
+
 # Display splash screen
 def splash(win):
     global l
@@ -116,7 +136,7 @@ def login_screen(win):
         win.addstr(7,0,"Password accepted, welcome %s!" % reflogin)    
         win.refresh()
         time.sleep(2)
-        return True
+        return reflogin
 
 # Enter players, seat and verify decks
 def setup_screen(win):
@@ -1047,8 +1067,10 @@ def gameloop(win,players):
             card = prompt_card(win,activeplayer,players,turn)
             if card != False:
                 if card.upper() == "DD":
+                    writelog("PLAY:P" + str(activeplayer) + " discards")
                     break
                 if card[0].upper() == "D" and card[1].isdigit():
+                    writelog("PLAY:P" + str(activeplayer) + " disbands C" + str(card[1]))
                     c = int(card[1])
                     if c > 0 and c <= 3:
                         p = activeplayer
@@ -1072,10 +1094,11 @@ def gameloop(win,players):
                     c21 = copy.deepcopy(c21_empty)
                     c22 = copy.deepcopy(c22_empty)
                     c23 = copy.deepcopy(c23_empty)
-
+                    writelog("CNCL:")
                     outcome = "Cancelled"
                     break
                 if card.upper() == "C":
+                    writelog("XCPT: Move reverted")
                     prevplayer = 1
                     if activeplayer == 1:
                         prevplayer = 2
@@ -1106,6 +1129,7 @@ def gameloop(win,players):
                         cplay = int(promptn(win,"Play " + card.upper() + " on Caravan number...",3))
                     p = activeplayer
                     c = cplay
+                    logmove(p,card,c)
                     validplay = playcard(win,card,cplay,activeplayer)
                     if validplay == True:
                         if p == 1 and c == 1:
@@ -1291,6 +1315,8 @@ def gameloop(win,players):
                                     if card.upper() != "JJ":
                                         c23[cp][cardnum] = card.upper()
                                 validplay = True
+                    totalpos = "%s%s R%s" % (str(p),str(c),cp)
+                    logmove(activeplayer,card,totalpos)
                     prevrow = cardpos
                     prevc = cardnum
         if activeplayer == 1:
@@ -1310,12 +1336,14 @@ def mainloop(win,ref):
     players = False
     while players == False:
         players = setup_screen(win)
+    writelog("NEWG:" + players[1] + " vs " + players[2])
     outcome = False
     winner = False
     while outcome == False:
         outcome,winner = gameloop(win,players)
         basic_screen_init(win,2)
         win.addstr(cprompty - 2,1,"%s (player %s) wins!" % (players[winner],winner),curses.A_BOLD) 
+        writelog("WINR:" + players[winner] + " P" + str(winner))
         newgame = win.getch(cprompty,1)
         c11 = copy.deepcopy(c11_empty)
         c12 = copy.deepcopy(c12_empty)
@@ -1328,11 +1356,13 @@ def mainloop(win,ref):
 
 # Step through loops
 def startup(win):
-    splash(win)
-    ref = False
+    if dosplash == True:
+        splash(win)
+    ref = ""
     while 1:
-        while ref == False:
+        while ref == "":
             ref = login_screen(win)
+        writelog("REFN:" + ref)
         result = False
         while result == False:
             result = mainloop(win,ref)
