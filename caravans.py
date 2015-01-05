@@ -7,6 +7,8 @@
 import curses
 import copy
 
+dosplash = True
+logfile = "logs.txt"
 fgcolor = curses.COLOR_GREEN
 bgcolor = curses.COLOR_BLACK
 termh = 24
